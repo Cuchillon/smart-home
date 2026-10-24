@@ -1,0 +1,8 @@
+[package]
+name = "smart-home"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+uuid = { version = "1.28.0", features = ["v4"] }
+rand = "0.10.3"
