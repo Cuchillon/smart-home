@@ -32,3 +32,28 @@ impl Outlet {
         if self.is_on { self.power } else { 0.0 }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_power() {
+        let outlet = Outlet::new(true, 10.0);
+        assert_eq!(outlet.get_power(), 10.0);
+    }
+
+    #[test]
+    fn test_turning_off() {
+        let mut outlet = Outlet::new(true, 10.0);
+        outlet.turn_off();
+        assert!(!outlet.is_on());
+    }
+
+    #[test]
+    fn test_turning_on() {
+        let mut outlet = Outlet::new(false, 10.0);
+        outlet.turn_on();
+        assert!(outlet.is_on());
+    }
+}

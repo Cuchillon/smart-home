@@ -28,3 +28,22 @@ impl SmartDevice {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_thermometer_variant() {
+        let device = SmartDevice::Thermometer(Thermometer::new(25.0));
+        // Проверяем, что print_state не паникует
+        device.print_state();
+    }
+
+    #[test]
+    fn test_outlet_variant() {
+        let device = SmartDevice::Outlet(Outlet::new(true, 300.0));
+        // Проверяем, что print_state не паникует
+        device.print_state();
+    }
+}

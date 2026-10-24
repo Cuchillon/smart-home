@@ -19,3 +19,14 @@ impl Thermometer {
         self.temperature
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_temperature() {
+        let thermometer = Thermometer::new(4.0);
+        assert_eq!(thermometer.get_temperature(), 4.0);
+    }
+}
