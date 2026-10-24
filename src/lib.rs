@@ -1,13 +1,13 @@
-mod thermometer;
-mod outlet;
 mod device;
-mod room;
-mod home;
 pub mod helpers;
+mod home;
+mod outlet;
+mod room;
+mod thermometer;
 
-pub use thermometer::Thermometer;
-pub use outlet::Outlet;
 pub use device::SmartDevice;
-pub use room::Room;
-pub use home::SmartHome;
 pub use helpers::*;
+pub use home::SmartHome;
+pub use outlet::Outlet;
+pub use room::Room;
+pub use thermometer::Thermometer;

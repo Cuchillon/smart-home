@@ -29,10 +29,6 @@ impl Outlet {
     }
 
     pub fn get_power(&self) -> f64 {
-        if self.is_on {
-            self.power
-        } else {
-            0.0
-        }
+        if self.is_on { self.power } else { 0.0 }
     }
 }

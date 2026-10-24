@@ -7,7 +7,6 @@ pub enum SmartDevice {
 }
 
 impl SmartDevice {
-
     pub fn print_state(&self) {
         match self {
             SmartDevice::Thermometer(thermometer) => {

@@ -1,4 +1,6 @@
-use smart_home::{get_random_power, get_random_temperature, Outlet, Room, SmartDevice, SmartHome, Thermometer};
+use smart_home::{
+    Outlet, Room, SmartDevice, SmartHome, Thermometer, get_random_power, get_random_temperature,
+};
 
 fn main() {
     let thermometer_1 = Thermometer::new(get_random_temperature());

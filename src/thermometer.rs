@@ -10,7 +10,7 @@ impl Thermometer {
         let id = Uuid::new_v4();
         Self { id, temperature }
     }
-    
+
     pub fn get_id(&self) -> Uuid {
         self.id
     }
