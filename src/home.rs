@@ -10,11 +10,15 @@ impl SmartHome {
     }
 
     pub fn get_room(&self, index: usize) -> &Room {
-        &self.rooms[index]
+        self.rooms
+            .get(index)
+            .unwrap_or_else(|| panic!("Room with index {} not found", index))
     }
 
     pub fn get_room_mut(&mut self, index: usize) -> &mut Room {
-        &mut self.rooms[index]
+        self.rooms
+            .get_mut(index)
+            .unwrap_or_else(|| panic!("Room with index {} not found", index))
     }
 
     pub fn print_report(&self) {
@@ -64,7 +68,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "Room with index 1 not found")]
     fn test_get_room_out_of_bounds() {
         let home = SmartHome::new(vec![Room::new(vec![SmartDevice::Thermometer(
             Thermometer::new(22.0),
