@@ -10,11 +10,15 @@ impl Room {
     }
 
     pub fn get_device(&self, index: usize) -> &SmartDevice {
-        &self.devices[index]
+        self.devices
+            .get(index)
+            .unwrap_or_else(|| panic!("Device with index {} not found", index))
     }
 
     pub fn get_device_mut(&mut self, index: usize) -> &mut SmartDevice {
-        &mut self.devices[index]
+        self.devices
+            .get_mut(index)
+            .unwrap_or_else(|| panic!("Device with index {} not found", index))
     }
 
     pub fn print_report(&self) {
@@ -53,7 +57,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "Device with index 1 not found")]
     fn test_get_device_out_of_bounds() {
         let room = Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]);
         let _ = room.get_device(1);
