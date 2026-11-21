@@ -24,8 +24,8 @@ impl SmartHome {
 
     pub fn print_report(&self) {
         println!("=== ОТЧЕТ ПО УМНОМУ ДОМУ ===");
-        for (i, (_, room)) in self.rooms.iter().enumerate() {
-            println!("Комната #{}", i);
+        for (id, room) in self.rooms.iter() {
+            println!("Комната {}", id);
             room.print_report();
             println!("-------------------------");
         }
@@ -58,7 +58,10 @@ mod tests {
         let room_id = Uuid::new_v4();
         let home = SmartHome::new(vec![
             Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]),
-            Room::new(vec![SmartDevice::Outlet(Outlet::new(true, 150.0))]),
+            Room::with_id(
+                room_id,
+                vec![SmartDevice::Outlet(Outlet::with_id(device_id, true, 150.0))],
+            ),
         ]);
 
         let room = home.get_room(room_id).unwrap_or_else(|| {
@@ -99,13 +102,11 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Room with index 1 not found")]
     fn test_get_room_not_found() {
         let id = Uuid::new_v4();
-        let home = SmartHome::new(vec![Room::with_id(
-            id,
-            vec![SmartDevice::Thermometer(Thermometer::new(22.0))],
-        )]);
+        let home = SmartHome::new(vec![Room::new(vec![SmartDevice::Thermometer(
+            Thermometer::new(22.0),
+        )])]);
         let not_found_room = home.get_room(id);
         assert!(not_found_room.is_none());
     }
