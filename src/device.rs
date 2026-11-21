@@ -1,5 +1,6 @@
 use crate::outlet::Outlet;
 use crate::thermometer::Thermometer;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub enum SmartDevice {
@@ -29,6 +30,13 @@ impl SmartDevice {
 
     pub fn print_state(&self) {
         println!("  {}", self.state_string());
+    }
+
+    pub fn get_id(&self) -> Uuid {
+        match self {
+            SmartDevice::Thermometer(t) => t.get_id(),
+            SmartDevice::Outlet(o) => o.get_id(),
+        }
     }
 }
 

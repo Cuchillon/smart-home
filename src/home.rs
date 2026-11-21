@@ -1,30 +1,30 @@
 use crate::Room;
+use std::collections::HashMap;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct SmartHome {
-    rooms: Vec<Room>,
+    rooms: HashMap<Uuid, Room>,
 }
 
 impl SmartHome {
-    pub fn new(rooms: Vec<Room>) -> Self {
-        Self { rooms }
+    pub fn new(rooms: impl IntoIterator<Item = Room>) -> Self {
+        Self {
+            rooms: rooms.into_iter().map(|r| (r.get_id(), r)).collect(),
+        }
     }
 
-    pub fn get_room(&self, index: usize) -> &Room {
-        self.rooms
-            .get(index)
-            .unwrap_or_else(|| panic!("Room with index {} not found", index))
+    pub fn get_room(&self, id: Uuid) -> Option<&Room> {
+        self.rooms.get(&id)
     }
 
-    pub fn get_room_mut(&mut self, index: usize) -> &mut Room {
-        self.rooms
-            .get_mut(index)
-            .unwrap_or_else(|| panic!("Room with index {} not found", index))
+    pub fn get_room_mut(&mut self, id: Uuid) -> Option<&mut Room> {
+        self.rooms.get_mut(&id)
     }
 
     pub fn print_report(&self) {
         println!("=== ОТЧЕТ ПО УМНОМУ ДОМУ ===");
-        for (i, room) in self.rooms.iter().enumerate() {
+        for (i, (_, room)) in self.rooms.iter().enumerate() {
             println!("Комната #{}", i);
             room.print_report();
             println!("-------------------------");
@@ -54,13 +54,19 @@ mod tests {
 
     #[test]
     fn test_get_room() {
+        let device_id = Uuid::new_v4();
+        let room_id = Uuid::new_v4();
         let home = SmartHome::new(vec![
             Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]),
             Room::new(vec![SmartDevice::Outlet(Outlet::new(true, 150.0))]),
         ]);
 
-        let room = home.get_room(1);
-        if let SmartDevice::Outlet(outlet) = room.get_device(0) {
+        let room = home.get_room(room_id).unwrap_or_else(|| {
+            panic!("Room with id {} not found", room_id);
+        });
+        if let SmartDevice::Outlet(outlet) = room.get_device(device_id).unwrap_or_else(|| {
+            panic!("Device with id {} not found", device_id);
+        }) {
             assert!(outlet.is_on());
             assert_eq!(outlet.get_power(), 150.0);
         } else {
@@ -70,12 +76,19 @@ mod tests {
 
     #[test]
     fn test_turn_off_outlet_via_mutable_access() {
-        let mut home = SmartHome::new(vec![Room::new(vec![SmartDevice::Outlet(Outlet::new(
-            true, 15.0,
-        ))])]);
+        let device_id = Uuid::new_v4();
+        let room_id = Uuid::new_v4();
+        let mut home = SmartHome::new(vec![Room::with_id(
+            room_id,
+            vec![SmartDevice::Outlet(Outlet::with_id(device_id, true, 15.0))],
+        )]);
 
-        let room = home.get_room_mut(0);
-        if let SmartDevice::Outlet(outlet) = room.get_device_mut(0) {
+        let room = home.get_room_mut(room_id).unwrap_or_else(|| {
+            panic!("Room with id {} not found", room_id);
+        });
+        if let SmartDevice::Outlet(outlet) = room.get_device_mut(device_id).unwrap_or_else(|| {
+            panic!("Device with id {} not found", device_id);
+        }) {
             assert_eq!(outlet.get_power(), 15.0);
             outlet.turn_off();
             assert!(!outlet.is_on());
@@ -87,10 +100,13 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "Room with index 1 not found")]
-    fn test_get_room_out_of_bounds() {
-        let home = SmartHome::new(vec![Room::new(vec![SmartDevice::Thermometer(
-            Thermometer::new(22.0),
-        )])]);
-        let _ = home.get_room(1);
+    fn test_get_room_not_found() {
+        let id = Uuid::new_v4();
+        let home = SmartHome::new(vec![Room::with_id(
+            id,
+            vec![SmartDevice::Thermometer(Thermometer::new(22.0))],
+        )]);
+        let not_found_room = home.get_room(id);
+        assert!(not_found_room.is_none());
     }
 }

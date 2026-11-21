@@ -12,6 +12,10 @@ impl Thermometer {
         Self { id, temperature }
     }
 
+    pub fn with_id(id: Uuid, temperature: f64) -> Self {
+        Self { id, temperature }
+    }
+
     pub fn get_id(&self) -> Uuid {
         self.id
     }

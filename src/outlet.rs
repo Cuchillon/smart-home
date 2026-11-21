@@ -13,6 +13,10 @@ impl Outlet {
         Self { id, is_on, power }
     }
 
+    pub fn with_id(id: Uuid, is_on: bool, power: f64) -> Self {
+        Self { id, is_on, power }
+    }
+
     pub fn get_id(&self) -> Uuid {
         self.id
     }

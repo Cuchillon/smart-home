@@ -1,30 +1,44 @@
 use crate::SmartDevice;
+use std::collections::HashMap;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct Room {
-    devices: Vec<SmartDevice>,
+    id: Uuid,
+    devices: HashMap<Uuid, SmartDevice>,
 }
 
 impl Room {
-    pub fn new(devices: Vec<SmartDevice>) -> Self {
-        Self { devices }
+    pub fn new(devices: impl IntoIterator<Item = SmartDevice>) -> Self {
+        let id = Uuid::new_v4();
+        Self {
+            id,
+            devices: devices.into_iter().map(|d| (d.get_id(), d)).collect(),
+        }
     }
 
-    pub fn get_device(&self, index: usize) -> &SmartDevice {
-        self.devices
-            .get(index)
-            .unwrap_or_else(|| panic!("Device with index {} not found", index))
+    pub fn with_id(id: Uuid, devices: impl IntoIterator<Item = SmartDevice>) -> Self {
+        Self {
+            id,
+            devices: devices.into_iter().map(|d| (d.get_id(), d)).collect(),
+        }
     }
 
-    pub fn get_device_mut(&mut self, index: usize) -> &mut SmartDevice {
-        self.devices
-            .get_mut(index)
-            .unwrap_or_else(|| panic!("Device with index {} not found", index))
+    pub fn get_id(&self) -> Uuid {
+        self.id
+    }
+
+    pub fn get_device(&self, id: Uuid) -> Option<&SmartDevice> {
+        self.devices.get(&id)
+    }
+
+    pub fn get_device_mut(&mut self, id: Uuid) -> Option<&mut SmartDevice> {
+        self.devices.get_mut(&id)
     }
 
     pub fn print_report(&self) {
         println!("Отчет по комнате (устройств: {}):", self.devices.len());
-        for device in &self.devices {
+        for device in self.devices.values() {
             device.print_state();
         }
     }
@@ -48,9 +62,15 @@ mod tests {
 
     #[test]
     fn test_get_device() {
-        let room = Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]);
+        let id = Uuid::new_v4();
+        let room = Room::new(vec![SmartDevice::Thermometer(Thermometer::with_id(
+            id, 22.0,
+        ))]);
 
-        if let SmartDevice::Thermometer(thermometer) = room.get_device(0) {
+        if let SmartDevice::Thermometer(thermometer) = room
+            .get_device(id)
+            .unwrap_or_else(|| panic!("Thermometer for {} not found", id))
+        {
             assert_eq!(thermometer.get_temperature(), 22.0);
         } else {
             panic!("Must be thermometer");
@@ -58,9 +78,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Device with index 1 not found")]
-    fn test_get_device_out_of_bounds() {
+    fn test_get_device_not_found() {
+        let id = Uuid::new_v4();
         let room = Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]);
-        let _ = room.get_device(1);
+        let not_found_device = room.get_device(id);
+        assert!(not_found_device.is_none());
     }
 }
