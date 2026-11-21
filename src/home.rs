@@ -1,5 +1,6 @@
 use crate::Room;
 
+#[derive(Debug)]
 pub struct SmartHome {
     rooms: Vec<Room>,
 }

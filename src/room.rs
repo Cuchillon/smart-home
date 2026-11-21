@@ -1,5 +1,6 @@
 use crate::SmartDevice;
 
+#[derive(Debug)]
 pub struct Room {
     devices: Vec<SmartDevice>,
 }

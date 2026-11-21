@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct Outlet {
     id: Uuid,
     is_on: bool,

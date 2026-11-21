@@ -1,6 +1,7 @@
 use crate::outlet::Outlet;
 use crate::thermometer::Thermometer;
 
+#[derive(Debug)]
 pub enum SmartDevice {
     Thermometer(Thermometer),
     Outlet(Outlet),

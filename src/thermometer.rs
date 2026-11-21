@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct Thermometer {
     id: Uuid,
     temperature: f64,
