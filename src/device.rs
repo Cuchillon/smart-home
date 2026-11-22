@@ -40,6 +40,18 @@ impl SmartDevice {
     }
 }
 
+impl From<Thermometer> for SmartDevice {
+    fn from(value: Thermometer) -> Self {
+        SmartDevice::Thermometer(value)
+    }
+}
+
+impl From<Outlet> for SmartDevice {
+    fn from(value: Outlet) -> Self {
+        SmartDevice::Outlet(value)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -78,5 +90,25 @@ mod tests {
         // Выключенная розетка не отдает мощность
         assert!(state.contains("Мощность: 0.0 Вт"), "state = {state}");
         assert!(!state.contains("30.0"), "state = {state}");
+    }
+
+    #[test]
+    fn test_from_thermometer() {
+        let thermometer = Thermometer::with_id(Uuid::new_v4(), 21.5);
+        let id = thermometer.get_id();
+        let device = SmartDevice::from(thermometer);
+
+        assert!(matches!(device, SmartDevice::Thermometer(_)));
+        assert_eq!(device.get_id(), id);
+    }
+
+    #[test]
+    fn test_from_outlet() {
+        let outlet = Outlet::with_id(Uuid::new_v4(), true, 150.0);
+        let id = outlet.get_id();
+        let device: SmartDevice = outlet.into();
+
+        assert!(matches!(device, SmartDevice::Outlet(_)));
+        assert_eq!(device.get_id(), id);
     }
 }
