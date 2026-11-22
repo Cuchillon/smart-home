@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct Thermometer {
     id: Uuid,
     temperature: f64,
@@ -8,6 +9,10 @@ pub struct Thermometer {
 impl Thermometer {
     pub fn new(temperature: f64) -> Self {
         let id = Uuid::new_v4();
+        Self { id, temperature }
+    }
+
+    pub fn with_id(id: Uuid, temperature: f64) -> Self {
         Self { id, temperature }
     }
 

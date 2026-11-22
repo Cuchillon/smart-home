@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct Outlet {
     id: Uuid,
     is_on: bool,
@@ -9,6 +10,10 @@ pub struct Outlet {
 impl Outlet {
     pub fn new(is_on: bool, power: f64) -> Self {
         let id = Uuid::new_v4();
+        Self { id, is_on, power }
+    }
+
+    pub fn with_id(id: Uuid, is_on: bool, power: f64) -> Self {
         Self { id, is_on, power }
     }
 
