@@ -22,6 +22,14 @@ impl SmartHome {
         self.rooms.get_mut(&id)
     }
 
+    pub fn add_room(&mut self, room: Room) {
+        self.rooms.insert(room.get_id(), room);
+    }
+
+    pub fn remove_room(&mut self, id: Uuid) -> Option<Room> {
+        self.rooms.remove(&id)
+    }
+
     pub fn print_report(&self) {
         println!("=== ОТЧЕТ ПО УМНОМУ ДОМУ ===");
         for (id, room) in self.rooms.iter() {
@@ -109,5 +117,25 @@ mod tests {
         )])]);
         let not_found_room = home.get_room(id);
         assert!(not_found_room.is_none());
+    }
+
+    #[test]
+    fn test_add_room() {
+        let id = Uuid::new_v4();
+        let mut home = SmartHome::new(vec![]);
+        let room = Room::with_id(id, vec![]);
+        home.add_room(room);
+        assert!(home.get_room(id).is_some());
+        assert_eq!(home.rooms.len(), 1);
+    }
+
+    #[test]
+    fn test_remove_room() {
+        let id = Uuid::new_v4();
+        let room = Room::with_id(id, vec![]);
+        let mut home = SmartHome::new(vec![room]);
+        assert!(home.remove_room(id).is_some());
+        assert!(home.remove_room(id).is_none());
+        assert!(home.rooms.is_empty());
     }
 }

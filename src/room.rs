@@ -36,6 +36,14 @@ impl Room {
         self.devices.get_mut(&id)
     }
 
+    pub fn add_device(&mut self, device: SmartDevice) {
+        self.devices.insert(device.get_id(), device);
+    }
+
+    pub fn remove_device(&mut self, id: Uuid) -> Option<SmartDevice> {
+        self.devices.remove(&id)
+    }
+
     pub fn print_report(&self) {
         println!("Отчет по комнате (устройств: {}):", self.devices.len());
         for device in self.devices.values() {
@@ -83,5 +91,25 @@ mod tests {
         let room = Room::new(vec![SmartDevice::Thermometer(Thermometer::new(22.0))]);
         let not_found_device = room.get_device(id);
         assert!(not_found_device.is_none());
+    }
+
+    #[test]
+    fn test_add_device() {
+        let id = Uuid::new_v4();
+        let mut room = Room::new(vec![]);
+        let device = SmartDevice::Thermometer(Thermometer::with_id(id, 22.0));
+        room.add_device(device);
+        assert!(room.get_device(id).is_some());
+        assert_eq!(room.devices.len(), 1);
+    }
+
+    #[test]
+    fn test_remove_device() {
+        let id = Uuid::new_v4();
+        let device = SmartDevice::Thermometer(Thermometer::with_id(id, 22.0));
+        let mut room = Room::new(vec![device]);
+        assert!(room.remove_device(id).is_some());
+        assert!(room.remove_device(id).is_none());
+        assert!(room.devices.is_empty());
     }
 }
