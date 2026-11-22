@@ -25,7 +25,7 @@ mod tests {
     fn test_get_random_temperature() {
         for _ in 0..10 {
             let temperature = get_random_temperature();
-            assert!(temperature >= -40.0 && temperature < 50.0);
+            assert!((-40.0..50.0).contains(&temperature));
         }
     }
 
@@ -33,7 +33,7 @@ mod tests {
     fn test_get_random_power() {
         for _ in 0..10 {
             let power = get_random_power();
-            assert!(power >= 1.0 && power < 100.0);
+            assert!((1.0..100.0).contains(&power));
         }
     }
 
