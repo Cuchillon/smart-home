@@ -1,3 +1,4 @@
+use crate::Reporter;
 use crate::outlet::Outlet;
 use crate::thermometer::Thermometer;
 use uuid::Uuid;
@@ -28,15 +29,17 @@ impl SmartDevice {
         }
     }
 
-    pub fn print_state(&self) {
-        println!("  {}", self.state_string());
-    }
-
     pub fn get_id(&self) -> Uuid {
         match self {
             SmartDevice::Thermometer(t) => t.get_id(),
             SmartDevice::Outlet(o) => o.get_id(),
         }
+    }
+}
+
+impl Reporter for SmartDevice {
+    fn print_report(&self) {
+        println!("  {}", self.state_string());
     }
 }
 

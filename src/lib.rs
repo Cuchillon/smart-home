@@ -13,3 +13,7 @@ pub use home::SmartHome;
 pub use outlet::Outlet;
 pub use room::Room;
 pub use thermometer::Thermometer;
+
+pub trait Reporter {
+    fn print_report(&self);
+}

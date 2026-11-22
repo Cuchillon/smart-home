@@ -1,4 +1,4 @@
-use crate::{GetDeviceError, Room, SmartDevice};
+use crate::{GetDeviceError, Reporter, Room, SmartDevice};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -42,8 +42,10 @@ impl SmartHome {
     pub fn remove_room(&mut self, id: Uuid) -> Option<Room> {
         self.rooms.remove(&id)
     }
+}
 
-    pub fn print_report(&self) {
+impl Reporter for SmartHome {
+    fn print_report(&self) {
         println!("=== ОТЧЕТ ПО УМНОМУ ДОМУ ===");
         for (id, room) in self.rooms.iter() {
             println!("Комната {}", id);

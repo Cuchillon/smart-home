@@ -1,5 +1,6 @@
 use smart_home::{
-    Outlet, Room, SmartDevice, SmartHome, Thermometer, get_random_power, get_random_temperature,
+    Outlet, Reporter, Room, SmartDevice, SmartHome, Thermometer, get_random_power,
+    get_random_temperature,
 };
 use uuid::Uuid;
 

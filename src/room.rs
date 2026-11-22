@@ -1,4 +1,4 @@
-use crate::SmartDevice;
+use crate::{Reporter, SmartDevice};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -43,11 +43,13 @@ impl Room {
     pub fn remove_device(&mut self, id: Uuid) -> Option<SmartDevice> {
         self.devices.remove(&id)
     }
+}
 
-    pub fn print_report(&self) {
+impl Reporter for Room {
+    fn print_report(&self) {
         println!("Отчет по комнате (устройств: {}):", self.devices.len());
         for device in self.devices.values() {
-            device.print_state();
+            device.print_report();
         }
     }
 }
