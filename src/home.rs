@@ -1,4 +1,4 @@
-use crate::Room;
+use crate::{GetDeviceError, Room, SmartDevice};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -20,6 +20,19 @@ impl SmartHome {
 
     pub fn get_room_mut(&mut self, id: Uuid) -> Option<&mut Room> {
         self.rooms.get_mut(&id)
+    }
+
+    pub fn get_room_device(
+        &self,
+        room_id: Uuid,
+        device_id: Uuid,
+    ) -> Result<&SmartDevice, GetDeviceError> {
+        let room = self
+            .rooms
+            .get(&room_id)
+            .ok_or(GetDeviceError::RoomNotFound(room_id))?;
+        room.get_device(device_id)
+            .ok_or(GetDeviceError::DeviceNotFound { room_id, device_id })
     }
 
     pub fn add_room(&mut self, room: Room) {
@@ -137,5 +150,43 @@ mod tests {
         assert!(home.remove_room(id).is_some());
         assert!(home.remove_room(id).is_none());
         assert!(home.rooms.is_empty());
+    }
+
+    #[test]
+    fn test_get_room_device() {
+        let (room_id, device_id) = (Uuid::new_v4(), Uuid::new_v4());
+        let home = SmartHome::new(vec![Room::with_id(
+            room_id,
+            vec![SmartDevice::Thermometer(Thermometer::with_id(
+                device_id, 22.0,
+            ))],
+        )]);
+
+        assert!(matches!(
+            home.get_room_device(room_id, device_id),
+            Ok(SmartDevice::Thermometer(_))
+        ));
+    }
+
+    #[test]
+    fn test_get_room_device_room_not_found() {
+        let room_id = Uuid::new_v4();
+        let home = SmartHome::new(vec![]);
+
+        assert_eq!(
+            home.get_room_device(room_id, Uuid::new_v4()).unwrap_err(),
+            GetDeviceError::RoomNotFound(room_id)
+        );
+    }
+
+    #[test]
+    fn test_get_room_device_device_not_found() {
+        let (room_id, device_id) = (Uuid::new_v4(), Uuid::new_v4());
+        let home = SmartHome::new(vec![Room::with_id(room_id, vec![])]);
+
+        assert_eq!(
+            home.get_room_device(room_id, device_id).unwrap_err(),
+            GetDeviceError::DeviceNotFound { room_id, device_id }
+        );
     }
 }
